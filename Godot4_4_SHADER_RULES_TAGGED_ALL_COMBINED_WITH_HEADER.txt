@@ -1,0 +1,2081 @@
+### [GODOT_SHADER_RULE]
+- ID: TEMPLATE_V4_4_FULL
+- Type: Multi-Section Document
+- Section: Godot 4.4.1 Shader構文ガイド（20章構成）
+- Context: 各構文のscope・shader_type・用途を明示しAIが分類可能な形式で出力
+- Known Issues: Godot 3.xの構文・用途混入による出力バグが多発するため、構成要素は4.4.1に限定
+- Godot Version: 4.4.1
+- Use Cases: AIアシスト型の3Dピクセルアート制作におけるShaderテンプレ構築と再利用
+
+--------------------------------------------------------------------------------
+
+# Godot4_4_SHADER_RULES_CH01_CH02_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 01（SHADER_RULES基礎） + Chapter 02（FRONT_FACING制御）
+
+
+## 01. shader_type canvas_item
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：2D描画で使用するシェーダータイプ。UIやSpriteに適用。
+
+## 02. shader_type spatial
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：3D描画用の標準シェーダータイプ。Meshなどに使用。
+
+## 03. render_mode unshaded
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ライトの影響を受けず自己発光のみで表示される。
+
+## 04. render_mode blend_mix
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：標準の透明ブレンドモード。
+
+## 05. render_mode blend_add
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：加算ブレンド。光やエフェクトに使用。
+
+## 06. render_mode cull_back
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面の描画を省略し、パフォーマンスを向上。
+
+## 07. render_mode depth_draw_always
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：毎フレームZバッファを書き込む構成。
+
+## 08. render_mode shadows_disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：影を描画しないことで高速化。
+
+## 09. render_mode light_only
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ライトの加算成分のみ描画し、他を無視。
+
+## 10. canvas_texture使用制限
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：screen_textureはcanvas_item専用。spatialでは使えない。
+
+## 11. 使用可能なbuilt-in変数
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：canvas_item: UV, SCREEN_UV。spatial: NORMAL, WORLD_POSITIONなど。
+
+## 12. UV vs SCREEN_UV
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：UVはテクスチャ基準、SCREEN_UVは画面基準のUV座標。
+
+## 13. texture(TEXTURE, UV)
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：指定テクスチャをUVでサンプリングする基本構文。
+
+## 14. ALBEDO vs COLOR
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ALBEDOは最終色、COLORはメッシュ頂点色。
+
+## 15. EMISSION使用時の注意
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：unshadedがないと環境に埋もれて見えない。
+
+## 16. light()関数と互換
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：canvas_itemでは使用不可。spatial専用。
+
+## 17. shader language version
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：Godot 4.4ではGDScript 2.0準拠。
+
+## 18. hint_range適用箇所
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：uniform変数に対してUIスライダー制御が可能。
+
+## 19. 不正render_mode組合せ
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：depth_draw_never + shadow ONは意味がない。
+
+## 20. スペースと改行の扱い
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：GDScriptと異なり自由だが、読みやすさを考慮。
+
+## 21. FRONT_FACINGとは
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ポリゴンの表面と裏面を識別するboolean。
+
+## 22. FRONT_FACING 使用位置
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：fragment関数内のみ使用可能。vertexでは不可。
+
+## 23. 表裏判定の利用例
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：アウトラインの片面描画制御、透明片面表示など。
+
+## 24. FRONT_FACING + discard
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面のみ破棄して表面のみ描画。
+
+## 25. FRONT_FACING + 色変更
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面は赤、表面は青などで切り替え可能。
+
+## 26. 法線とFRONT_FACINGの関係
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：押し出し方向や照明条件の切替に使える。
+
+## 27. 二重構成用の表裏制御
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：outlineと本体の混在で描画切替に活用。
+
+## 28. FRONT_FACINGが無効なケース
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：depth_draw_neverやAAあり環境では参照ミスになることも。
+
+## 29. FRONT_FACINGとcull
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：両面描画（cull_disabled）とセットで使用。
+
+## 30. FRONT_FACINGベースのUV反転
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面だけUVをミラーする演出。
+
+## 31. シャドウ内での不安定挙動
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：表裏がshadow map内で不安定になる場合がある。
+
+## 32. screen_textureと併用注意
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面に写ってる背景を取得し誤認識する例。
+
+## 33. rim lightと併用
+[TAG: shader_type=spatial, scope=fragment, purpose=outline, version=4.4.1]
+
+- 定義・動作：裏面でもrimを適用したいときの補正要素。
+
+## 34. ライト方向の切替
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面だけ光の当たり方を調整。N方向補正。
+
+## 35. vertexからの誤用禁止
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：FRONT_FACINGはfragment専用でvertexでは使えない。
+
+## 36. alpha discardと表裏制御
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透過を含む場合でも条件により裏面だけ消せる。
+
+## 37. animation + 表裏補正
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：アニメーションで向きが変わる場合の補正構成。
+
+## 38. depth_draw + FRONT_FACING
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：Zとの連動で透明/不透明を切替。
+
+## 39. outline extrusionとの併用
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：押し出し時に裏面のみ残す制御。
+
+## 40. double-sided構造での活用
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：両面描画Meshで表裏別演出が必要なケース。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH03_CH04_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 03（PostProcess構成） + Chapter 04（shader_type系）
+
+
+## 01. screen_texture 使用条件
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：canvas_item 限定。SCREEN_TEXTURE_USED 宣言が必要。
+
+## 02. screen_uv の注意点
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：画面のUV取得には補正が必要。解像度依存。
+
+## 03. screen_pixel_size の誤差
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：小さい解像度では破綻が起こりやすい。
+
+## 04. ViewportTexture の取得
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：SubViewport 経由。表示には TextureRect を使用。
+
+## 05. ColorRect + Shader 適用
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：最も軽量なポストエフェクト構成。
+
+## 06. SubViewport → TextureRect 接続
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：画面合成における基本構造。
+
+## 07. render_target_update_mode
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ALWAYS が推奨。ONCE だと止まる。
+
+## 08. render_target_clear_mode
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：CLEAR_ALWAYS を使わないと前フレームが残る。
+
+## 09. canvas_layer と Viewport
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：UIの描画順制御に関与。
+
+## 10. viewport_stretch = disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ピクセルアート向け。伸び縮みを避ける。
+
+## 11. integer_scale 使用
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：低解像度ピクセル表示で正確なスケーリングを実現。
+
+## 12. SubViewport のサイズ固定
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：resize_free をオフにして強制解像度に固定。
+
+## 13. render_target_v_flip
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：上下反転を補正。TextureRectで必要。
+
+## 14. screen_texture と Viewport の違い
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：screen_texture は内部計算で低速化しやすい。
+
+## 15. ダウンサンプリングとアップスケーリング
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：低解像度で描画し拡大表示。擬似ピクセル化。
+
+## 16. ポストプロセス適用順
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：後に描画された方が最終効果になる。
+
+## 17. SubViewportContainer の使い方
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：エディタ上でUIと共存させやすくする。
+
+## 18. ColorRect.expand = true
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：自動サイズ調整を許可。画面全体への適用に便利。
+
+## 19. filter = false / mipmap = false
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ピクセル表示における正確な拡大表示の前提条件。
+
+## 20. shader_param 経由で pixel scale 指定
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：外部から拡大率を制御。リアルタイム調整に対応。
+
+## 21. shader_type canvas_item
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：2Dシェーダーで、draw_rect などが使える。
+
+## 22. shader_type spatial
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：3D空間で使う。light() や depth_draw が有効。
+
+## 23. shader_type sky
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：SkyMaterialなどに使用される特化型。
+
+## 24. render_mode unshaded
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：光の影響を受けないマテリアル構成。
+
+## 25. render_mode blend_add
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：発光体やUIエフェクト向け加算合成。
+
+## 26. render_mode blend_mix
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：通常の透過合成。すべての2Dで推奨。
+
+## 27. render_mode depth_draw_alpha_prepass
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明素材に対してZバッファ先書き。
+
+## 28. render_mode cull_disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：両面描画を可能にする。アウトライン用など。
+
+## 29. render_mode shadows_disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シャドウマップをスキップ。草や髪用。
+
+## 30. light() 使用条件
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：spatial + shading 有効時のみ。unshaded では無効。
+
+## 31. light().color
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：現在のライトの色情報を参照。演出用に使用。
+
+## 32. light().shadow
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：影の影響を 0〜1 で参照。shadows_disabledで常に1。
+
+## 33. SHADOW_COORDS の使い方
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シャドウマップのUV取得。影付き表現で使用。
+
+## 34. UNIFORM_LIGHT_PASS
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：全ライト共通で計算最適化するモード。
+
+## 35. light_only の活用
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：特定パスのみを表示する構成。特効演出向き。
+
+## 36. directional light 対応
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：位置でなく方向ベースの処理が必要。
+
+## 37. 2Dと3Dでの render_mode 違い
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：canvas_item は別構文。spatial専用モードに注意。
+
+## 38. cull_front の使い方
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：法線押し出しアウトライン描画に使う。
+
+## 39. render_priority の順序制御
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：複数描画オブジェクトでZ順を補正。
+
+## 40. shader_type 誤用時のエラー
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：spatial に screen_texture を使うとエラーになる。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH05_CH06_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 05（blend/discard） + Chapter 06（depth/cull）
+
+
+## 01. blend_add
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：加算合成。背景が暗い場合に発光表現として最も使われる。
+
+## 02. blend_mix
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：標準のブレンド合成。透過UIやSpriteに最適。
+
+## 03. blend_mul
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：乗算合成。影表現や色の乗算に適する。
+
+## 04. blend_sub
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：減算合成。発光と逆の効果で陰影を作る。
+
+## 05. blend_premul_alpha
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：アルファ乗算済みのブレンド。UI合成などで背景を綺麗に透過。
+
+## 06. alpha_to_coverage
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：MSAAを利用した半透明エッジの滑らかさ改善。
+
+## 07. alpha_scissor_threshold
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：一定の透明度以下のピクセルをスキップ。アンチエイリアス不可。
+
+## 08. discard
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明または不要なピクセルを描画対象から外す。
+
+## 09. discard + cutoff
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：cutoff変数を用いて透明度でdiscard判定を行う。
+
+## 10. discard + step()
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：しきい値判定をstep()で簡潔に処理。
+
+## 11. discard + FRONT_FACING
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：表裏でピクセル描画条件を変える構成。
+
+## 12. discard + noise
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ノイズパターンによる破棄でグリッチや粒状表現を作る。
+
+## 13. discard + round(UV)
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ピクセル境界での破棄に使い、滲みやモアレを抑制。
+
+## 14. cutoff uniform
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ユーザーが透明度しきい値をインスペクタで調整可能にする。
+
+## 15. blend + discard 順序注意
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：discardは最初に適用しないと無駄な描画が走る。
+
+## 16. unshaded + EMISSION only
+[TAG: shader_type=spatial, scope=uniform, purpose=emission, version=4.4.1]
+
+- 定義・動作：透明なUIやエフェクトで背景なし発光だけ表示。
+
+## 17. alpha = 0 でも描画される
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明ピクセルでも描画処理が走る。discardが必要。
+
+## 18. ColorRamp + discard
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：色に応じて透明判定をマップ経由で行う。
+
+## 19. cutout + alpha_to_coverage
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：両立で柔らかい輪郭と透明保持を両立する。
+
+## 20. depth_draw_alpha_prepass + discard
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：半透明描画順の補正と破棄を両立する構成。
+
+## 21. depth_draw_always
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：常にZバッファに書き込む。立体構成の標準設定。
+
+## 22. depth_draw_never
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：Zバッファを使わず、UIやアウトライン描画に。
+
+## 23. depth_draw_alpha_prepass
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明前にZを先に描いて透過誤差を減らす。
+
+## 24. depth_test_disabled
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：Z比較そのものを無効化。完全前面描画用途。
+
+## 25. cull_back
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：裏面を非表示にすることで軽量化。標準。
+
+## 26. cull_front
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：表面非表示にしてアウトライン用に裏面描画。
+
+## 27. cull_disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：両面を描画。薄いポリゴンや草、髪に使われる。
+
+## 28. shadows_disabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：影処理そのものを無効にし、軽量かつ誤描画防止。
+
+## 29. render_priority
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：描画順を整数値で制御しZ-fighting回避。
+
+## 30. z_index
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：CanvasItemに対する2D描画優先順位設定。
+
+## 31. transparent_sort_enabled
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：Viewport内の描画順を自動調整する機能。
+
+## 32. z_offset
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：Z値を人工的にずらして視覚的前後を調整。
+
+## 33. depth_draw_opaque_only
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明部分を除いてZバッファへ記録。
+
+## 34. depth_draw_on_top
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：Zに関係なく前面に描画（UIや注釈に）。
+
+## 35. shadows_disabled + depth_draw_never
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：非表示マテリアルに最適な軽量構成。
+
+## 36. cull + outline押し出し
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：cull_front + 法線押し出しでアウトライン演出。
+
+## 37. priority + UI背面合成
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：UIの後ろに特殊効果を通す構成。
+
+## 38. depth_draw + render_target_clear_mode
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：Z整合に加えて描画バッファを制御。
+
+## 39. ViewportLayer + depth組合せ
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：複数レイヤーをZ付きで合成する構成。
+
+## 40. Z-fighting緩和: far clip圧縮
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：遠景Z範囲を短縮して精度を上げる対処法。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH07_CH08_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 07（uniform, export） + Chapter 08（light関数）
+
+
+## 01. uniform float
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シェーダーに数値を渡す標準的な型。すべてのシェーダータイプで使用可能。
+
+## 02. uniform vec2/vec3
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：位置、方向、スケール等ベクトル情報の入力に使用。
+
+## 03. uniform sampler2D
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：テクスチャを渡す際に使用。texture()関数で参照可能。
+
+## 04. hint_range(min, max)
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：スライダー入力を有効にし、範囲指定を制限する。
+
+## 05. hint_color
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：カラー選択パレットとしてインスペクタで表示。
+
+## 06. hint_normal
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：法線マップとして処理するためのヒント。
+
+## 07. hint_albedo
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：アルベド用テクスチャであることを明示。
+
+## 08. @export var param
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：GDScript連携でShaderMaterialパラメータを制御可能に。
+
+## 09. @export_group
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：UI整形のためにインスペクタ上でグループ化可能。
+
+## 10. shader_param
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ShaderMaterial 側で渡す変数。uniform と紐づく。
+
+## 11. param_defaults
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：uniformに初期値を与えることで安全な初期化。
+
+## 12. source_color / normal
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：テクスチャの役割を指定し、レンダリング解釈を統一。
+
+## 13. float alpha_cutoff
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明ピクセルの境界値として多用。
+
+## 14. sampler2D noise_tex
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ノイズパターンを適用するために使用。
+
+## 15. ShaderMaterial の共有
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：複数ノードに適用可能なマテリアルを構築。
+
+## 16. .tres外部化
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：Materialやテクスチャを外部ファイルとして保存し再利用。
+
+## 17. uniform配列
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：同じ種類の変数を一括制御するために配列化。
+
+## 18. UV2使用
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：光マップや環境マップなど2番目のUVセットに。
+
+## 19. GDScriptから set_shader_param()
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：コードからリアルタイムに変数制御。
+
+## 20. メッシュ頂点色の ALBEDO 反映
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：COLOR 経由でテクスチャと合成可能にする構成。
+
+## 21. light()
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：spatialシェーダーでのみ使用可能。ライト情報を取得。
+
+## 22. light().color
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：現在照射中のライトの色情報。
+
+## 23. light().energy
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：ライトの強度。物理ベースの演出に活用。
+
+## 24. light().shadow
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：影情報（0〜1）で明暗を判断。
+
+## 25. light().specular
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：鏡面反射用の強度制御。
+
+## 26. attenuation
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：距離に応じた光量減衰。物理ベースの効果に。
+
+## 27. directional light 判定
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：ライト位置とカメラ距離で見分ける必要あり。
+
+## 28. rim lighting
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：法線と視線の角度差で発光エッジ演出を実現。
+
+## 29. half-Lambert
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：N dot L を 0.5リマップし柔らかく光を当てる。
+
+## 30. specular highlight
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：反射ベクトルと視線方向の角度で光沢演出。
+
+## 31. shadow_coord()
+[TAG: shader_type=canvas_item, scope=uniform, purpose=lighting, version=4.4.1]
+
+- 定義・動作：シャドウマップ空間での座標を返す内部関数。
+
+## 32. UNIFORM_LIGHT_PASS
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：全ライト共通処理を行う最適化指定。
+
+## 33. light_only モード
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：特定のレンダーパスだけを表示する。
+
+## 34. unshaded + light() 非対応
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：unshadedでは light() 関数が無効になる。
+
+## 35. shadows_disabled + light()
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：影情報が無効化され常に1を返す。
+
+## 36. light_direction
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：光の向きベクトルを明示的に使用する構成。
+
+## 37. 影付き rim light
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：light().shadow を rim に反映する高度な演出。
+
+## 38. シャドウ演出専用ライト
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シャドウとlight()計算の二重演出用。
+
+## 39. directional + cutoff演出
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：主光源方向を前提にしたカット制御構成。
+
+## 40. バイアス誤差対策
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シャドウと光計算でZバイアス補正を組み込む。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH09_CH10_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 09（discard / EMISSION） + Chapter 10（ALBEDO / COLOR）
+
+
+## 01. discard
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：条件を満たすピクセルを描画対象から完全に除外する。
+
+## 02. discard + cutoff
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：カットオフしきい値を超えないアルファ値のピクセルを破棄。
+
+## 03. discard + noise
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ノイズテクスチャによって破棄条件を変化させ、グリッチ等に使用。
+
+## 04. discard + step()
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：step関数を使って境界条件で破棄を明示。
+
+## 05. discard + rim
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ふち部分のみを破棄することでアウトラインを形成。
+
+## 06. discard + round(UV)
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：UV座標を整数化しピクセル単位で破棄判定。
+
+## 07. cutoff uniform
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：しきい値を変数で指定し、UIから操作可能に。
+
+## 08. alpha = 0 は非表示ではない
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明でもZや描画処理が走るため discard が必要。
+
+## 09. discard + light/shadow
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明化によって影計算や light() の整合性が崩れるケース。
+
+## 10. discard + gradient
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：グラデーションに応じて透明領域をコントロール。
+
+## 11. EMISSION の基本
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：自身から放射される光。ALBEDOとは加算される構成。
+
+## 12. EMISSION + unshaded
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：ライトに依存せず完全自己発光として表示される。
+
+## 13. EMISSION + light()
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：加算処理として光と合成されるが、演出には調整が必要。
+
+## 14. EMISSION only 表現
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：ALBEDOを使わず、EMISSIONのみによる発色。
+
+## 15. EMISSION + カラー補正
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：発光色を色相・明度・彩度でコントロール。
+
+## 16. rim light と EMISSIONの合成
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：縁発光部分のみを自己発光にする構成。
+
+## 17. light condition + EMISSION
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：暗い場所のみ発光を強める条件付き構成。
+
+## 18. EMISSION + animation
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：時間による強度変化で発光の点滅や呼吸表現。
+
+## 19. discard + EMISSION
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：背景を破棄しつつ発光部分のみを残す処理。
+
+## 20. 影に影響しないEMISSIONのみ素材
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：透明+shadows_disabledで軽量発光素材を作る。
+
+## 21. ALBEDO
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：マテリアルの基本色としてライトに影響される反射色。
+
+## 22. ALBEDO + EMISSION
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：両者の合成で光と色の発色を両立。
+
+## 23. ALBEDO.a
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：透明度を指定するが、alpha scissorやdiscardとの併用が多い。
+
+## 24. COLOR
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：SpriteやMeshの頂点カラーを取得・乗算に利用。
+
+## 25. COLOR + ALBEDO
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：乗算により色変化を補正・調整可能。
+
+## 26. COLOR + EMISSION
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：カラー乗算によって発光色をリアルタイムに変更。
+
+## 27. vertex color = COLOR
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：メッシュ側で指定した色を ALBEDO に使うことが可能。
+
+## 28. 頂点色とUVの合成
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：頂点色とテクスチャ情報を重ねる処理。
+
+## 29. tint_color + ALBEDO
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：外部から指定された色とベースカラーの合成。
+
+## 30. tint_color + EMISSION
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：外部発色色でEMISSION演出の調整。
+
+## 31. 明度のみ変更
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：hsvベースでv成分のみ変更し、全体色調を保ったまま輝度操作。
+
+## 32. 彩度のみ操作
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：色味の強さだけを変更して統一感を保つ。
+
+## 33. グレースケール変換
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ALBEDOやCOLORのRGB平均でグレースケール表現。
+
+## 34. ColorRamp + ALBEDO
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：カラーランプを通じて色に段階的変化を与える。
+
+## 35. ALBEDO + rim light
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：ベース色に縁発光を合成して強調表現。
+
+## 36. ALBEDO + shadow
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：ライトの影響を受けた自然な陰影再現。
+
+## 37. 複数COLORによるグラデーション
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：頂点ごとの色指定で滑らかに色を変える構成。
+
+## 38. alpha blend + COLOR
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：透過とカラーを両立させたUI演出。
+
+## 39. ALBEDO mix + discard
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：部分的に色のある部分だけ表示。
+
+## 40. ALBEDO + animation
+[TAG: shader_type=canvas_item, scope=fragment, purpose=emission, version=4.4.1]
+
+- 定義・動作：タイムベースで色の変化を与える動的演出。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH11_CH12_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 11（法線押し出し） + Chapter 12（ピクセル化構成）
+
+
+## 01. 法線押し出しとは
+[TAG: shader_type=spatial, scope=uniform, purpose=outline, version=4.4.1]
+
+- 定義・動作：頂点の法線方向にわずかに拡大し、アウトラインを形成する技法。
+
+## 02. cull_front + scale
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：表面を消し、裏面を膨張表示して縁を描く構成。
+
+## 03. double mesh構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：オブジェクトを二重化してアウトラインと本体を分離。
+
+## 04. rim light と法線押し出しの違い
+[TAG: shader_type=spatial, scope=fragment, purpose=outline, version=4.4.1]
+
+- 定義・動作：rimは色処理、押し出しは形状処理によるアウトライン。
+
+## 05. push_back_vertex()
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：カスタムシェーダーで直接法線方向へ拡張する手法。
+
+## 06. outline_thickness uniform
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：拡張の距離をインスペクタで調整可能に。
+
+## 07. アウトライン専用Materialの設定
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：本体とは別マテリアルで押し出し制御。
+
+## 08. マテリアル切り替えで縁だけ表示
+[TAG: shader_type=canvas_item, scope=uniform, purpose=outline, version=4.4.1]
+
+- 定義・動作：二重構造を用い縁のみに描画内容を限定。
+
+## 09. オブジェクトスケールとの干渉
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：押し出し距離がスケールによって歪むのを補正。
+
+## 10. Z-fighting 対策に depth_draw_never
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：本体と干渉しないようZバッファ書き込みを禁止。
+
+## 11. outline color = uniform
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：縁の色を固定色で制御。
+
+## 12. meshのLODと縁の厚み問題
+[TAG: shader_type=canvas_item, scope=uniform, purpose=outline, version=4.4.1]
+
+- 定義・動作：低ポリモデルで縁が太くなるのを補正。
+
+## 13. outline 影の表示非表示
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：shadows_disabled で縁に影を落とさない設定。
+
+## 14. 法線の正規化
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：異常拡張を防ぐため normal を normalize()。
+
+## 15. 頂点カラーによる縁調整
+[TAG: shader_type=canvas_item, scope=uniform, purpose=outline, version=4.4.1]
+
+- 定義・動作：vertex.color に応じて拡張度を変える構成。
+
+## 16. rim light + outline併用時の順序
+[TAG: shader_type=spatial, scope=fragment, purpose=outline, version=4.4.1]
+
+- 定義・動作：rimを先に描画しoutlineを重ねる。
+
+## 17. 透明アウトライン構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ALBEDO.a = 0 で背景を消し、縁だけ残す。
+
+## 18. 3Dと2D両方に対応した構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：outline用Materialの2D版と3D版を切替使用。
+
+## 19. キャラクター輪郭演出
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：トゥーン調シェーダーとの組み合わせが効果的。
+
+## 20. 発光縁処理
+[TAG: shader_type=canvas_item, scope=uniform, purpose=outline, version=4.4.1]
+
+- 定義・動作：EMISSIONで縁を光らせ、セル画風表現にする。
+
+## 21. ピクセル化構成の基本
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：SubViewport で小さな解像度に描画し拡大。
+
+## 22. ColorRect + shader
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：最も単純な全画面エフェクト構成。
+
+## 23. screen_texture の制約
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：canvas_item 限定。使用時には明示が必要。
+
+## 24. ViewportTexture の取得
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：SubViewport の出力を texture 経由で取得。
+
+## 25. render_target_update_mode
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ALWAYS にして毎フレーム更新。
+
+## 26. render_target_clear_mode
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：CLEAR_ALWAYS にして前フレーム残りを消去。
+
+## 27. TextureRect で表示
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：SubViewport の内容を実際に画面に描画する。
+
+## 28. pixel snap + integer scale
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：拡大時にピクセルずれを抑制する設定。
+
+## 29. stretch_mode = disabled
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：非拡大での表示保持。ピクセル単位描画に最適。
+
+## 30. viewport_size 固定
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：SubViewport のサイズを低解像度に設定。
+
+## 31. ダウンサンプリング構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：192x108 などで描画し、fullscreen に拡大。
+
+## 32. round(UV)
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ピクセル誤差を防ぐためUVを整数単位で補正。
+
+## 33. hint_range(pixel_scale)
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シェーダーから倍率をインスペクタで制御。
+
+## 34. screen_uv と screen_pixel_size
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：画面上の絶対ピクセル計算に使用。
+
+## 35. color modulate + noise
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ザラつき・ドット風表現に使用される合成手法。
+
+## 36. viewportに light処理反映
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：内部の SubViewport でライトも描画される構成。
+
+## 37. blur → pixelate 合成順
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ポストエフェクト順が視覚表現に影響。
+
+## 38. ピクセルアウトライン + スプライト
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：低解像度でも輪郭がはっきり出る構成。
+
+## 39. shader によるエッジ検出
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：隣接ピクセル差分からアウトラインを生成。
+
+## 40. pixel_texture 使用時のfilter
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：mipmap + filter OFFが前提。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH13_CH14_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 13（PostEffect順序） + Chapter 14（SubViewport構成）
+
+
+## 01. PostEffectとは
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：画面描画後に適用するエフェクト処理の総称。
+
+## 02. ColorRect + shader
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：画面全体にかかるエフェクトで最も簡易な構成。
+
+## 03. SubViewport + TextureRect
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：内部描画を別解像度で行い処理をかける方式。
+
+## 04. screen_texture 限定
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：canvas_item シェーダーでのみ使用可能。
+
+## 05. draw_rect + texture
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：ColorRect に似た描画方式。細かい指定が可能。
+
+## 06. blur + noise + pixelate
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：エフェクトの合成順が視覚に影響を与える。
+
+## 07. shaderによるedge検出
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：隣接ピクセルとの差分でエッジ線を表示。
+
+## 08. UV操作によるゆがみ
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：時間でUVを変化させて水面や揺れを表現。
+
+## 09. greyscale変換
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：色情報を平均し白黒に変換する処理。
+
+## 10. invertカラー反転
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：RGBを反転させる演出。
+
+## 11. 色相・彩度シフト
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：色相環をずらして印象変化させる。
+
+## 12. ポスタリゼーション
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：色数を制限しアニメ調の見た目に。
+
+## 13. パレット変換
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：固定色セットに置き換えて8bit風表現に。
+
+## 14. ビネット
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：画面の周囲を暗くして視線集中を誘導。
+
+## 15. タイリング表現
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：screen_uv を増幅してリピートさせる演出。
+
+## 16. 波紋・ディストーション
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：正弦波でUVを揺らす水面表現。
+
+## 17. ドロップシャドウ
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：UI要素などに影をつけるポスト処理。
+
+## 18. タイムでアニメ変化
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：TIMEを使って周期的に処理を変える構成。
+
+## 19. フェードイン・アウト
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：ALPHA制御で徐々に表示切替。
+
+## 20. 複数エフェクトの順序指定
+[TAG: shader_type=spatial, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：表示順が視覚に直結するため重要。
+
+## 21. SubViewportの基本
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：独立した描画コンテキストを提供。マルチレイヤー合成に最適。
+
+## 22. SubViewportContainer使用
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：UIと連動してSubViewportを配置可能に。
+
+## 23. render_target_update_mode = ALWAYS
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：毎フレーム描画を行う設定。
+
+## 24. clear_mode = ALWAYS
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：前フレームのゴミを残さない設定。
+
+## 25. TextureRectへの接続
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：SubViewport の内容を画面に出力する手段。
+
+## 26. filter = false
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：ピクセル化目的では必ずOFFに。
+
+## 27. mipmap = false
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：滑らか補間を避け、ドット感を維持。
+
+## 28. scale/stretch_mode調整
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：拡大比率を適切にして表示崩れを回避。
+
+## 29. pixel snap適用
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：端数のない表示でドットずれを抑制。
+
+## 30. ViewportTexture取得
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ShaderMaterialやコードで参照。
+
+## 31. viewport size制御
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：内部描画解像度を明示的に小さく設定。
+
+## 32. 画面解像度とスナップ対応
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：表示解像度が変化してもスナップが維持される設計。
+
+## 33. 入れ子構成の制御
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：SubViewport内にさらに配置可能。UIと重ねる設計。
+
+## 34. UI表示との共存
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：Overlay UIを常に最前面に配置。
+
+## 35. SubViewportごとの描画順
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：render_priorityで前後を明示。
+
+## 36. アンチエイリアスOFF必須
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：ピクセル化エフェクトでは必ず切る。
+
+## 37. 複数レイヤーの合成
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：パーティクルや光を別Viewportで分ける構成。
+
+## 38. パーティクル専用Viewport
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：負荷を分離して処理効率を改善。
+
+## 39. SubViewportでのlight対応
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ライトが内部にも影響する構成を設計。
+
+## 40. post shaderと viewport合成順
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ColorRect等に適用するエフェクトの合成順を制御。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH15_CH16_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 15（ShaderMaterial再利用） + Chapter 16（ピクセル固定）
+
+
+## 01. ShaderMaterialとは
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：Godotのカスタムシェーダーをノードに適用するマテリアルリソース。
+
+## 02. ShaderMaterial .tres化
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：プロジェクト内で再利用可能にするため外部化する。
+
+## 03. マテリアルの共有
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：複数ノード間で同一マテリアルを使うことで統一的な表示が可能。
+
+## 04. インスタンス化
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：共有マテリアルを個別に複製してパラメータを変更。
+
+## 05. material_override
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：ノードのデフォルトマテリアルを強制的に差し替える。
+
+## 06. スクリプトから set_shader_param()
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：GDScriptで変数制御。アニメ・UI連動に使える。
+
+## 07. material.shader vs shader param
+[TAG: shader_type=spatial, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：シェーダー自体と変数の切り替えを明示的に分ける。
+
+## 08. 再利用可能なノード群
+[TAG: shader_type=canvas_item, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：マテリアル適用済みプレハブを使って量産化する。
+
+## 09. shader_param の初期化
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：nullまたは未設定時の不具合を避けるためデフォルト設定。
+
+## 10. uniform構成と同期
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：Shader側とGDScriptで変数名と型を一致させることが必須。
+
+## 11. viewportごとに material を切替
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：画面サイズや用途ごとに専用エフェクトに分離する。
+
+## 12. Rim+Edge用マテリアル
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：アウトラインと縁光演出を持つ統合シェーダー構成。
+
+## 13. アニメーションマテリアル
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：時間変化を含む素材に適用する構成。
+
+## 14. ロジック別マテリアル分離
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：影響範囲を減らすため処理別にマテリアル分割。
+
+## 15. SubViewportごとの適用
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：レイヤー合成などでマテリアルの適用範囲を限定。
+
+## 16. LightPassあり/なし切替
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：同一マテリアルでも条件により描画構成を変化。
+
+## 17. draw_priority付き適用
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：複数マテリアル表示順を制御。
+
+## 18. tint_color, uv_scroll 付き汎用素材
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：最小構成で多数表現を担える再利用型マテリアル。
+
+## 19. emission blend + mask
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：発光演出と領域指定の統合構成。
+
+## 20. デバイス対応切り替え
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：低解像度用と高解像度用でマテリアルを差し替える。
+
+## 21. アンチエイリアス解除
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：ピクセルアート表現ではAAをOFFにする。
+
+## 22. project settingsでのAA無効化
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：Display → MSAAをDisabledに設定。
+
+## 23. SubViewport単位でのAA制御
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：高解像・低解像それぞれでAAを別に制御。
+
+## 24. Pixel Snap の有効化
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：Transform補間を切り、ピクセル境界に固定。
+
+## 25. integer_scale = true
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：解像度拡大時に整数比率で引き延ばす。
+
+## 26. stretch_mode = disabled
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：表示サイズ変更に追従せず原寸表示を維持。
+
+## 27. スプライトfilter = false
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：滑らかな補間を切ってドットを保つ。
+
+## 28. mipmap = false
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：縮小時のぼやけを防止。ドットの明確さ維持。
+
+## 29. round(UV)
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：UVを整数にすることでピクセル単位の描画に。
+
+## 30. screen_pixel_size 使用
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：画面解像度と連動したピクセル補正。
+
+## 31. viewportダウンサンプリング
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：小さな解像度でレンダリングして拡大する方式。
+
+## 32. screen_texture → UV補間無効化
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：誤差を防ぐため拡大時に補間させない構成。
+
+## 33. filter + stretch_mode の相互関係
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：filter=true でも stretch disabled なら補間なし。
+
+## 34. SpriteSheet制御とPixelSnap
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：シートアニメでズレが出ないよう補正。
+
+## 35. ピクセル完結型UI
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：整数GridやPixelSnapでUI表示が崩れない構成。
+
+## 36. ViewportTexture + no filter
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：拡大してもジャギを維持する合成方法。
+
+## 37. 手描きテクスチャ再現
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：スキャンした画像でもドット風に仕上げる。
+
+## 38. 背景＋キャラ整合性確保
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：異なる拡大率の要素間でAA解除を統一。
+
+## 39. SubViewport内のFilter OFF
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：全ての要素で補間を切り、完全なピクセル描画。
+
+## 40. UHD → SDで破綻しない設計
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：高解像素材でもPixelSnapを活かして縮小対応。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH17_CH18_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 17（light関数活用） + Chapter 18（shadows_disabled構成）
+
+
+## 01. カスタムlight()関数とは
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：spatialシェーダーでライティング挙動を上書きできる関数。
+
+## 02. light().color
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：照射中のライトカラー。リムライトや演出の色制御に活用。
+
+## 03. light().energy
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：ライトの強度を取得し、距離減衰の演出などに使用。
+
+## 04. light().shadow
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：影の影響度。0.0〜1.0で制御され、重ね描きの制御に重要。
+
+## 05. UNIFORM_LIGHT_PASS
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：すべてのライト共通で処理を行うモード。コスト削減向け。
+
+## 06. specular + rim + light()合成
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：鏡面・縁・影の明るさすべてを加算して描画。
+
+## 07. distance attenuation計算
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ライトからの距離で減衰量を制御。自然なライティングに。
+
+## 08. half-Lambert調整
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：光が当たらない側でもやや明るくする表現。
+
+## 09. N・L（法線×ライト方向）
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：ライティング強度のベースとなる計算式。
+
+## 10. fresnel項
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：視線と法線の角度によりリムエフェクトを演出。
+
+## 11. shading_mode = unshadedと併用不可
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：light() は unshaded時には使えない。
+
+## 12. light方向の視覚化
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：デバッグ時にベクトルを可視化し正確性を検証。
+
+## 13. light_onlyパス分離
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：ライト成分のみ描画し他を非表示にする演出。
+
+## 14. light().specular
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：光沢反射強度を計算するためのプロパティ。
+
+## 15. rim color = light color * factor
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：ライト色と乗算することで発光色を制御。
+
+## 16. バウンスライティング風演出
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：複数 light() を加算して拡散光を演出。
+
+## 17. ベイク光の代替
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：プロシージャル light() で固定光源表現を再現。
+
+## 18. ライト方向による条件分岐
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：右から照らされたときだけエフェクトを入れるなど。
+
+## 19. モバイル対応light簡略化
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：distanceや影計算を除外し軽量化。
+
+## 20. rimとlightとemissionを合成
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：要素ごとの加算/乗算によって見栄えと性能を調整。
+
+## 21. shadows_disabled
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：影の生成・描画を完全に無効化。軽量な処理に向く。
+
+## 22. light_only + shadows_disabled併用
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：光のみ描画し、影を完全に消す特殊演出。
+
+## 23. 透明マテリアルでのshadows_disabled
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：透明部分も影を落とさなくなる構成。
+
+## 24. 2Dと3Dでの影挙動の違い
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：CanvasItemとSpatialで処理系が異なる。
+
+## 25. shadow bias調整
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：自己影の干渉を避ける補正。
+
+## 26. light_pass_modeと影演出
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：UNIFORM_LIGHT_PASSは影情報に制限がある。
+
+## 27. 影の濃さ = light().shadow
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：0.0〜1.0の範囲で明暗表現。
+
+## 28. シャドウマップ境界エラー
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：輪郭にガタつきが出る問題を解決する。
+
+## 29. light方向での影調整
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：特定方向からの光に影をつけない工夫。
+
+## 30. シャドウ切替マテリアル
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：影ON/OFFのマテリアルを用途で使い分ける。
+
+## 31. post effectで影の強調
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：シャドウの輪郭を加工して見やすくする演出。
+
+## 32. rim + shadows_disabled
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：縁光のみを残し、影表現を削る構成。
+
+## 33. UI素材に影がつく問題回避
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：shadows_disabledで非対象化。
+
+## 34. 草や葉など薄い素材に影をつけない
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：透過系は影不要なため軽量化必須。
+
+## 35. 深度差による影重なり対策
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：Z-fightingと同様、クリッピング誤差に注意。
+
+## 36. light + no shadow overlay
+[TAG: shader_type=spatial, scope=fragment, purpose=lighting, version=4.4.1]
+
+- 定義・動作：シャドウなしでライトのみを強調した表現。
+
+## 37. キャラの影だけ消す演出
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：プレイヤーには影がなく、背景にだけ投影。
+
+## 38. cast_shadow = OFFとの違い
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：shadows_disabled は描画・演算両方無効。
+
+## 39. shadow除外マスクの活用
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：特定の光やオブジェクトだけに影響させない設定。
+
+## 40. 影処理なし素材テンプレート
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：light影響を受けつつ、影だけ除去した軽量素材構成。
+
+################################################################################
+
+# Godot4_4_SHADER_RULES_CH19_CH20_TAGGED.md
+
+# Godot 4.4 SHADER_RULES GPT吸収用: Chapter 19（Z-fighting対策） + Chapter 20（AIによるShader出力ルール）
+
+
+## 01. Z-fightingとは
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：微小なZ値の差でポリゴンが同一位置に重なり描画がちらつく現象。
+
+## 02. Z-depthの精度不足
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：遠景や極端に近接した面でZ分解能が足りなくなる。
+
+## 03. depth_draw_priority
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：描画順を明示的に設定し、重なり競合を防止。
+
+## 04. render_priority
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：手前/奥の描画順をコントロールする定番手法。
+
+## 05. z_indexとZ-fightingの関係
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：2Dでの描画順制御と3Dの奥行き干渉は別概念。
+
+## 06. depth_test_disabled
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：Zバッファを無効化して常に前面に描画する回避方法。
+
+## 07. cull設定でポリゴン削減
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：裏面の不要な描画をカットし競合要因を減らす。
+
+## 08. viewportごとのZ衝突
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：複数のViewportから同一レイヤー描画時の競合。
+
+## 09. シャドウのZ-fighting
+[TAG: shader_type=spatial, scope=fragment, purpose=structure, version=4.4.1]
+
+- 定義・動作：地面に投影される影がちらつく要因となることも。
+
+## 10. Z-offsetによる調整
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：微少なZ追加でポリゴン面を前面に浮かせる処理。
+
+## 11. outlineと本体の競合
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：押し出しモデルと本体がZ衝突するケース。
+
+## 12. 半透明と深度競合
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：透明度による描画順とZ描画が一致しない例。
+
+## 13. 遠景オブジェクト統合
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：Lod合成でオブジェクト数を減らし競合を抑制。
+
+## 14. clip range圧縮
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：near/far間隔を狭めてZ精度を改善。
+
+## 15. orthogonal cameraでの干渉
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：Z順での描画が適切でない時に発生。
+
+## 16. 非表示ポリゴンのZ値残留
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：可視でないMeshがZを書き残す問題に注意。
+
+## 17. subsurface構造での重複
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：多重素材の透過/反射で干渉が複雑化。
+
+## 18. UIと3Dの混在
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：CanvasLayerと3D Viewportの重なり調整。
+
+## 19. 録画・出力時のZエラー強調
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：解像度変更や出力補正でZ-fightingが目立つ場合あり。
+
+## 20. 影ON/OFFによるZ負荷差
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：ライトの数や影生成がZバッファ競合を悪化させる要因になる。
+
+## 21. AIによるshader構造出力とは
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：ChatGPTやLLMにより構文・構成・パラメータを自動で生成。
+
+## 22. 生成系は正確な制約提示が鍵
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：render_modeなどの仕様制限を明示する必要がある。
+
+## 23. シンタックス検証付き出力
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：構文・意味・互換性すべてをLLMが検査するよう訓練。
+
+## 24. 出力フォーマット標準化
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：構造定義、変数解説、コード例に分けて出力させる。
+
+## 25. パラメータ自動補完
+[TAG: shader_type=canvas_item, scope=uniform, purpose=automation, version=4.4.1]
+
+- 定義・動作：GDScriptやインスペクタに即した変数命名が最適。
+
+## 26. トラブル再現例を併記
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：誤解されやすい使い方をエラー付きで明示。
+
+## 27. 旧バージョン非互換項目除外
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：V3専用構文を出力させないルール化が必要。
+
+## 28. GitHubなど外部リファレンス補完
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：Open source例やIssueとの連携強化。
+
+## 29. tilemap / particles系の出力制御
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：誤認識しやすいため出力フィルタが必要。
+
+## 30. 再利用性の高いシェーダー構造
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：外部.tresや汎用Material形式を推奨。
+
+## 31. デバッグログ付き出力
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：print/debug情報を挿入し誤動作を減らす。
+
+## 32. パフォーマンスベンチ付き構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：描画負荷の目安も一緒に出力。
+
+## 33. テストケース付き提案
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：単体動作チェック付きで検証済コードを生成。
+
+## 34. screen_textureの自動例示
+[TAG: shader_type=canvas_item, scope=uniform, purpose=automation, version=4.4.1]
+
+- 定義・動作：PostEffectで頻出の構文をテンプレート化。
+
+## 35. パラメータタグ構成
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：UIで使いやすくするためhint付けた構成出力。
+
+## 36. light関数 + alpha同時使用補正
+[TAG: shader_type=spatial, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：内部計算干渉を避けるため出力を誘導。
+
+## 37. discard + blend順序制御
+[TAG: shader_type=canvas_item, scope=uniform, purpose=structure, version=4.4.1]
+
+- 定義・動作：描画バグ回避のため順序を強制。
+
+## 38. outline構成テンプレート
+[TAG: shader_type=canvas_item, scope=fragment, purpose=effect, version=4.4.1]
+
+- 定義・動作：押し出し法線型の構成をひな型として含める。
+
+## 39. Tilemap専用の誤出力回避
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：誤検知によるコード破綻を防ぐ。
+
+## 40. 3Dピクセル系構成の明示
+[TAG: shader_type=canvas_item, scope=uniform, purpose=effect, version=4.4.1]
+
+- 定義・動作：スプライト + glTF構成を前提にした出力。
+
+################################################################################
+
