@@ -1,0 +1,37 @@
+[gd_scene load_steps=7 format=3 uid="uid://cuc6cxgel1din"]
+
+[ext_resource type="Shader" uid="uid://sxuo8r4lypey" path="res://Shaders/toon_outline_shader.gdshader" id="1_djkur"]
+[ext_resource type="PackedScene" uid="uid://dgdj2qqwsbf42" path="res://Assets/ALL_animal_v24.glb" id="2_h175a"]
+[ext_resource type="Shader" uid="uid://bosth6s26cd6k" path="res://Shaders/pixelate_post.gdshader" id="3_togfq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cm0pq"]
+render_priority = 0
+shader = ExtResource("1_djkur")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_fos0i"]
+shader = ExtResource("3_togfq")
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_uu6xs"]
+viewport_path = NodePath("GameViewport")
+
+[node name="Main" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_cm0pq")
+
+[node name="ALL_animal_v24" parent="MeshInstance3D" instance=ExtResource("2_h175a")]
+
+[node name="GameViewport" type="SubViewport" parent="."]
+size = Vector2i(320, 180)
+
+[node name="PixelCamera" type="Camera3D" parent="GameViewport"]
+projection = 1
+size = 90.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+material = SubResource("ShaderMaterial_fos0i")
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("ViewportTexture_uu6xs")
