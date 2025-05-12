@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7waqrdmo84qb"]
+
+[ext_resource type="PackedScene" uid="uid://bbmfbsd5sxxta" path="res://Model/ALL_animal_v24.glb" id="1_f6udf"]
+
+[node name="Main" type="Node3D"]
+
+[node name="ALL_animal_v24" parent="." instance=ExtResource("1_f6udf")]
